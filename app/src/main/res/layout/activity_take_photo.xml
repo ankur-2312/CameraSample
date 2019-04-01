@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="@dimen/_50dp"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <ImageView
+        android:id="@+id/ivImage"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_200dp"
+        android:background="@color/gray"
+        tools:ignore="ContentDescription" />
+
+    <Button
+        android:id="@+id/butTakePhotoPrivate"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10dp"
+        android:background="@drawable/rounded_button1"
+        android:text="@string/take_photo_and_save_in_private_dir" />
+
+    <Button
+        android:id="@+id/butTakePhotoPublic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_10dp"
+        android:background="@drawable/rounded_button1"
+        android:text="@string/take_photo_and_save_in_public_dir" />
+
+
+</LinearLayout>

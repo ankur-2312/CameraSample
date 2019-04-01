@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">CameraSample</string>
+    <string name="yyyyMMdd_HHmmss">yyyyMMdd_HHmmss</string>
+    <string name="com.example.android.fileprovider">com.example.android.fileprovider</string>
+    <string name="imageExtension">.jpg</string>
+    <string name="JPEG_">JPEG_</string>
+    <string name="specialCharacter">_</string>
+    <string name="take_photo_and_save_in_public_dir">Take Photo and save in Public Dir</string>
+    <string name="take_photo_and_save_in_private_dir">Take Photo and save in Private Dir</string>
+    <string name="take_photo">Take Photo</string>
+    <string name="get_photo_from_gallery">Get Photo From Gallery</string>
+    <string name="get_multiple_image">Get Multiple Image</string>
+    <string name="get_single_image">Get Single Image</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    <string name="go_to_settings">Go to Settings to give Permission</string>
+    <string name="permissionRequirement">Required Permissions are necessary for using this feature</string>
+</resources>
