@@ -5,8 +5,6 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -21,6 +19,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+
+import com.bumptech.glide.Glide;
 
 import java.io.File;
 import java.io.IOException;
@@ -151,9 +151,7 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
     //This method get callback when other activity is started with startActivityForResult
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAMERA_REQUEST_CODE) {
-            Bitmap myBitmap = BitmapFactory.decodeFile(currentPhotoPath);
-            if (myBitmap != null)
-                ivImage.setImageBitmap(myBitmap);
+            Glide.with(this).load(currentPhotoPath).into(ivImage);
             galleryAddPic();
 
         }

@@ -5,12 +5,8 @@ import android.content.ClipData;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
-import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -30,7 +26,7 @@ public class GetImageFromGalleryActivity extends AppCompatActivity implements Vi
     private static final int GALLERY_REQUEST_CODE = 200;
     private static final int GALLERY_REQUEST_CODE_1 = 400;
     private ImageDataAdapter adapter;
-    private ArrayList<Bitmap> bitmapList;
+    private ArrayList<Uri> uriList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,8 +40,8 @@ public class GetImageFromGalleryActivity extends AppCompatActivity implements Vi
         Button butGetSingleImage = findViewById(R.id.butGetSingleImage);
         Button butGetMultipleImage = findViewById(R.id.butGetMultipleImage);
         RecyclerView recyclerview = findViewById(R.id.rv);
-        bitmapList = new ArrayList<>();
-        adapter = new ImageDataAdapter(bitmapList);
+        uriList = new ArrayList<>();
+        adapter = new ImageDataAdapter(uriList);
         recyclerview.setLayoutManager(new LinearLayoutManager(this));
         recyclerview.setAdapter(adapter);
         butGetSingleImage.setOnClickListener(this);
@@ -99,25 +95,22 @@ public class GetImageFromGalleryActivity extends AppCompatActivity implements Vi
                 case GALLERY_REQUEST_CODE:
 
                     Uri uri = data.getData();
-                    Bitmap bmp = convertUriToBitmap(uri);
-                    bitmapList.clear();
-                    bitmapList.add(bmp);
+                    uriList.clear();
+                    uriList.add(uri);
                     adapter.notifyDataSetChanged();
                     break;
 
                 case GALLERY_REQUEST_CODE_1:
 
                     if (data.getClipData() != null) {
-                        bitmapList.clear();
+                        uriList.clear();
 
                         ClipData mClipData = data.getClipData();
                         for (int i = 0; i < mClipData.getItemCount(); i++) {
 
                             ClipData.Item item = mClipData.getItemAt(i);
                             Uri uri1 = item.getUri();
-                            Bitmap bmp1 = convertUriToBitmap(uri1);
-
-                            bitmapList.add(bmp1);
+                            uriList.add(uri1);
                         }
                         adapter.notifyDataSetChanged();
                     }
@@ -178,20 +171,6 @@ public class GetImageFromGalleryActivity extends AppCompatActivity implements Vi
         Intent captureIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         captureIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
         startActivityForResult(captureIntent, GALLERY_REQUEST_CODE_1);
-    }
-
-    //Method to convert uri to bitmap
-    private Bitmap convertUriToBitmap(Uri uri) {
-        String[] filePathColumn = {MediaStore.Images.Media.DATA};
-
-        assert uri != null;
-        Cursor cursor = getContentResolver().query(uri, filePathColumn, null, null, null);
-        assert cursor != null;
-        cursor.moveToFirst();
-        int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
-        String picturePath = cursor.getString(columnIndex);
-        cursor.close();
-        return BitmapFactory.decodeFile(picturePath);
     }
 
     //This method shows the dialog box to go to settings
