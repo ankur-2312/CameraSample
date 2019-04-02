@@ -5,6 +5,7 @@ import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -151,8 +152,9 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
     //This method get callback when other activity is started with startActivityForResult
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == CAMERA_REQUEST_CODE) {
-            Glide.with(this).load(currentPhotoPath).into(ivImage);
+            Glide.with(this).load(currentPhotoPath).centerCrop().into(ivImage);
             galleryAddPic();
+           // deleteLastPhotoTaken();
 
         }
     }
@@ -293,6 +295,34 @@ public class TakePhotoActivity extends AppCompatActivity implements View.OnClick
 
                     }
                 });
+    }
+    private void deleteLastPhotoTaken() {
+
+        String[] projection = new String[] {
+                MediaStore.Images.ImageColumns._ID,
+                MediaStore.Images.ImageColumns.DATA,
+                MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME,
+                MediaStore.Images.ImageColumns.DATE_TAKEN,
+                MediaStore.Images.ImageColumns.MIME_TYPE };
+
+        final Cursor cursor = getContentResolver().query(
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI, projection,
+                null,null, MediaStore.Images.ImageColumns.DATE_TAKEN + " DESC");
+
+        if (cursor != null) {
+            cursor.moveToFirst();
+
+            int column_index_data =
+                    cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+
+            String image_path = cursor.getString(column_index_data);
+            cursor.close();
+
+            File file = new File(image_path);
+            if (file.exists()) {
+                file.delete();
+            }
+        }
     }
 
 }

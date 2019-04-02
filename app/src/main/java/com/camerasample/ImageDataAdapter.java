@@ -1,6 +1,7 @@
 package com.camerasample;
 
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,10 +15,10 @@ import java.util.ArrayList;
 
 
 public class ImageDataAdapter extends RecyclerView.Adapter<ImageDataAdapter.MyViewHolder> {
-    private ArrayList<Uri> imageUri;
+    private ArrayList<Bitmap> imageBitmap;
 
-    ImageDataAdapter(ArrayList<Uri> imageUri) {
-        this.imageUri = imageUri;
+    ImageDataAdapter(ArrayList<Bitmap> imageBitmap) {
+        this.imageBitmap = imageBitmap;
     }
 
     @NonNull
@@ -32,12 +33,15 @@ public class ImageDataAdapter extends RecyclerView.Adapter<ImageDataAdapter.MyVi
     @Override
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
 
-        Glide.with(MyApplication.getContext()).load(imageUri.get(position)).into(holder.ivImage);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            Glide.with(MyApplication.getContext()).load(imageBitmap.get(position)).circleCrop().transform(new GlideCircleWithBorder(5, (MyApplication.getContext().getColor(R.color.Orange)))).
+                    placeholder(R.drawable.ic_3d_rotation_black_24dp).into(holder.ivImage);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return imageUri.size();
+        return imageBitmap.size();
     }
 
     //View holder to hold the views of inflated layout

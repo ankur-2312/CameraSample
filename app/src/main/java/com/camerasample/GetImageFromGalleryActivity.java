@@ -2,11 +2,18 @@ package com.camerasample;
 
 import android.Manifest;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Matrix;
+
+import androidx.exifinterface.media.ExifInterface;
+
 import android.net.Uri;
 import android.os.Build;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
@@ -17,7 +24,10 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class GetImageFromGalleryActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -26,7 +36,15 @@ public class GetImageFromGalleryActivity extends AppCompatActivity implements Vi
     private static final int GALLERY_REQUEST_CODE = 200;
     private static final int GALLERY_REQUEST_CODE_1 = 400;
     private ImageDataAdapter adapter;
-    private ArrayList<Uri> uriList;
+    private ArrayList<Bitmap> uriList;
+
+    private static Bitmap rotateImage(Bitmap img, int degree) {
+        Matrix matrix = new Matrix();
+        matrix.postRotate(degree);
+        Bitmap rotatedImg = Bitmap.createBitmap(img, 0, 0, img.getWidth(), img.getHeight(), matrix, true);
+        img.recycle();
+        return rotatedImg;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,8 +113,14 @@ public class GetImageFromGalleryActivity extends AppCompatActivity implements Vi
                 case GALLERY_REQUEST_CODE:
 
                     Uri uri = data.getData();
+                    Bitmap bitmapafterCheckRotation = null;
+                    try {
+                        bitmapafterCheckRotation = rotateImageIfRequired(MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri), uri);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     uriList.clear();
-                    uriList.add(uri);
+                    uriList.add(bitmapafterCheckRotation);
                     adapter.notifyDataSetChanged();
                     break;
 
@@ -109,8 +133,14 @@ public class GetImageFromGalleryActivity extends AppCompatActivity implements Vi
                         for (int i = 0; i < mClipData.getItemCount(); i++) {
 
                             ClipData.Item item = mClipData.getItemAt(i);
-                            Uri uri1 = item.getUri();
-                            uriList.add(uri1);
+                            Uri uriMulti = item.getUri();
+                            Bitmap bitmapafterCheckRotationMulti = null;
+                            try {
+                                bitmapafterCheckRotationMulti = rotateImageIfRequired(MediaStore.Images.Media.getBitmap(this.getContentResolver(), uriMulti), uriMulti);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                            uriList.add(bitmapafterCheckRotationMulti);
                         }
                         adapter.notifyDataSetChanged();
                     }
@@ -223,6 +253,30 @@ public class GetImageFromGalleryActivity extends AppCompatActivity implements Vi
 
                     }
                 });
+    }
+
+    private Bitmap rotateImageIfRequired(Bitmap bitmap, Uri uri) throws IOException {
+
+        InputStream input = this.getContentResolver().openInputStream(uri);
+        ExifInterface ei;
+        if (Build.VERSION.SDK_INT > 23) {
+            assert input != null;
+            ei = new ExifInterface(input);
+        } else
+            ei = new ExifInterface(Objects.requireNonNull(uri.getPath()));
+
+        int orientation = ei.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+
+        switch (orientation) {
+            case ExifInterface.ORIENTATION_ROTATE_90:
+                return rotateImage(bitmap, 90);
+            case ExifInterface.ORIENTATION_ROTATE_180:
+                return rotateImage(bitmap, 180);
+            case ExifInterface.ORIENTATION_ROTATE_270:
+                return rotateImage(bitmap, 270);
+            default:
+                return bitmap;
+        }
     }
 }
 
