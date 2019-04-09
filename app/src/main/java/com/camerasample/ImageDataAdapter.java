@@ -36,6 +36,7 @@ public class ImageDataAdapter extends RecyclerView.Adapter<ImageDataAdapter.MyVi
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Glide.with(MyApplication.getContext()).load(imageBitmap.get(position)).circleCrop().transform(new GlideCircleWithBorder(5, (MyApplication.getContext().getColor(R.color.Orange)))).
                     placeholder(R.drawable.ic_3d_rotation_black_24dp).into(holder.ivImage);
+
         }
     }
 
